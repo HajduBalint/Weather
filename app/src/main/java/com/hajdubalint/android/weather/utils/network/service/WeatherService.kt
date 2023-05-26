@@ -11,13 +11,11 @@ interface WeatherService {
     @GET("weather")
     fun getWeatherFromCoordinatesAsync(
         @Query("lat") lat: String,
-        @Query("lon") lon: String,
-        @Query("lang") lang: String
+        @Query("lon") lon: String
     ): Deferred<Response<WeatherResponse>>
 
     @GET("weather")
     fun getWeatherFromCityNameAsync(
         @Query("q") q: String,
-        @Query("lang") lang: String,
     ): Deferred<Response<WeatherResponse>>
 }
