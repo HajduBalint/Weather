@@ -3,13 +3,17 @@ package com.hajdubalint.android.weather.utils.network
 import com.google.gson.GsonBuilder
 import com.hajdubalint.android.weather.BuildConfig
 import com.hajdubalint.android.weather.utils.model.base.AppConstant
+import com.hajdubalint.android.weather.utils.model.base.AppConstant.LANGUAGE
+import com.hajdubalint.android.weather.utils.model.base.AppConstant.UNITS
 import com.hajdubalint.android.weather.utils.network.service.WeatherService
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import okhttp3.*
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 object ApiFactory {
 
@@ -33,7 +37,19 @@ object ApiFactory {
         val original: Request = chain.request()
         val originalHttpUrl: HttpUrl = original.url
         val url = originalHttpUrl.newBuilder()
-            .addQueryParameter("units", "metric")
+            .addQueryParameter("units", UNITS)
+            .build()
+        val requestBuilder: Request.Builder = original.newBuilder()
+            .url(url)
+        val request: Request = requestBuilder.build()
+        chain.proceed(request)
+    }
+
+    private val languageInterceptor = Interceptor { chain ->
+        val original: Request = chain.request()
+        val originalHttpUrl: HttpUrl = original.url
+        val url = originalHttpUrl.newBuilder()
+            .addQueryParameter("lang", LANGUAGE)
             .build()
         val requestBuilder: Request.Builder = original.newBuilder()
             .url(url)
@@ -45,10 +61,7 @@ object ApiFactory {
         .addInterceptor(loggingInterceptor)
         .addInterceptor(appIdInterceptor)
         .addInterceptor(unitInterceptor)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .callTimeout(30, TimeUnit.SECONDS)
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .addInterceptor(languageInterceptor)
         .build()
 
     private val gson = GsonBuilder().setLenient().create()
