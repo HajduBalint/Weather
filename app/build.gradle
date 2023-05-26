@@ -96,4 +96,8 @@ dependencies {
     // Okhttp3
     implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.2"
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+
+    // Room
+    implementation "androidx.room:room-runtime:2.5.1"
+    kapt "androidx.room:room-compiler:2.5.1"
 }
