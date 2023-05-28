@@ -1,8 +1,6 @@
 package com.hajdubalint.android.weather.utils.database.repository
 
-import android.content.Context
-import androidx.lifecycle.LiveData
-import com.hajdubalint.android.weather.utils.database.CityDatabase
+import com.hajdubalint.android.weather.utils.database.CityDao
 import com.hajdubalint.android.weather.utils.model.City
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -13,45 +11,27 @@ import javax.inject.Singleton
 @Singleton
 class CityRepository
 @Inject constructor(
-
+    private val cityDao: CityDao
 ) {
-
-    var database: CityDatabase? = null
-    var cities: LiveData<List<City>>? = null
-
-    private fun initializeDB(context: Context): CityDatabase {
-        return CityDatabase.getInstance(context)
-    }
-
-    fun insertCity(context: Context, city: City) {
-        database = initializeDB(context)
-
+    suspend fun insertCity(city: City) {
         CoroutineScope(IO).launch {
-            database!!.cityDao().insert(city)
+            cityDao.insert(city)
         }
     }
 
-    fun getAllCities(context: Context): LiveData<List<City>> {
-        database = initializeDB(context)
-
-        cities = database!!.cityDao().getAll()
-
-        return cities as LiveData<List<City>>
+    suspend fun getAllCities(): List<City> {
+        return cityDao.getAll()
     }
 
-    fun deleteCity(context: Context, city: City) {
-        database = initializeDB(context)
-
+    suspend fun deleteCity(city: City) {
         CoroutineScope(IO).launch {
-            database!!.cityDao().delete(city)
+            cityDao.delete(city)
         }
     }
 
-    fun deleteAllCities(context: Context) {
-        database = initializeDB(context)
-
+    suspend fun deleteAllCities() {
         CoroutineScope(IO).launch {
-            database!!.cityDao().deleteAll()
+            cityDao.deleteAll()
         }
     }
 }

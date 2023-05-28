@@ -22,6 +22,8 @@ class MainActivity : ComponentActivity() {
                 hv.getWeatherFromCoordinates()
 
                 sv.getWeatherFromCityName()
+
+                sv.getAllCity()
             }
         }
     }

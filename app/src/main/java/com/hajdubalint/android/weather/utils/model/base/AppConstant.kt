@@ -6,4 +6,6 @@ object AppConstant {
     const val LANGUAGE = "hu"
 
     const val UNITS = "metric"
+
+    const val DATABASE = "database"
 }
