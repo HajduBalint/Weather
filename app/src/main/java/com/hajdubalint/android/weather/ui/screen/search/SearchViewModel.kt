@@ -1,54 +1,62 @@
 package com.hajdubalint.android.weather.ui.screen.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hajdubalint.android.weather.navigation.Navigation
+import com.hajdubalint.android.weather.navigation.NavigationUtil
 import com.hajdubalint.android.weather.utils.database.repository.CityRepository
 import com.hajdubalint.android.weather.utils.model.City
-import com.hajdubalint.android.weather.utils.network.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel
 @Inject constructor(
-    private val weatherRepository: WeatherRepository,
-    private val cityRepository: CityRepository
+    private val cityRepository: CityRepository,
+    private val navigationUtil: NavigationUtil
 ) : ViewModel() {
-    fun getWeatherFromCityName() {
-        viewModelScope.launch {
-            weatherRepository.getWeatherFromCityName("Eger")?.let {
-                Log.d("TAG from name", it.toString())
-            } ?: run {
 
+    val cityList: MutableStateFlow<List<City>?> = MutableStateFlow(null)
+
+    init {
+        getAllCity()
+    }
+
+    fun insertCity(): (String) -> Unit {
+        return { cityName ->
+            viewModelScope.launch {
+                cityRepository.insertCity(City(name = cityName))
+                getAllCity()
             }
         }
     }
 
-    fun insertCity(city: City) {
+    private fun getAllCity() {
         viewModelScope.launch {
-            cityRepository.insertCity(city)
+            cityList.value = cityRepository.getAllCities()
         }
     }
 
-    fun getAllCity() {
-        viewModelScope.launch {
-            cityRepository.getAllCities().let {
-                Log.d("TAG get all cities", it.toString())
+    fun deleteCity(): (City) -> Unit {
+        return {
+            viewModelScope.launch {
+                cityRepository.deleteCity(it)
+                getAllCity()
             }
         }
     }
 
-    fun deleteCity(city: City) {
-        viewModelScope.launch {
-            cityRepository.deleteCity(city)
+    fun onCityClicked(): (String) -> Unit {
+        return { cityName ->
+            navigationUtil.navigateTo("${Navigation.HOME.route}/$cityName")
         }
     }
 
-    fun deleteAllCities() {
-        viewModelScope.launch {
-            cityRepository.deleteAllCities()
+    fun onBackClicked(): () -> Unit {
+        return {
+            navigationUtil.navigateTo(Navigation.HOME.route)
         }
     }
 }
