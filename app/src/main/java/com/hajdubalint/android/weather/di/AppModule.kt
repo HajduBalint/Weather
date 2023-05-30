@@ -2,6 +2,7 @@ package com.hajdubalint.android.weather.di
 
 import android.app.Application
 import androidx.room.Room
+import com.hajdubalint.android.weather.navigation.NavigationUtil
 import com.hajdubalint.android.weather.utils.database.CityDao
 import com.hajdubalint.android.weather.utils.database.DataBase
 import com.hajdubalint.android.weather.utils.model.base.AppConstant.DATABASE
@@ -33,4 +34,10 @@ object AppModule {
     @Singleton
     fun provideCityDao(database: DataBase): CityDao =
         database.cityDao()
+
+    @Provides
+    @Singleton
+    fun provideNavHostController(): NavigationUtil =
+        NavigationUtil()
+
 }
