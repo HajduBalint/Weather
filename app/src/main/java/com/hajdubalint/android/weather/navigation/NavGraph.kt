@@ -31,5 +31,10 @@ fun NavGraph(
         ) {
             SearchScreen()
         }
+        composable(
+            route = Navigation.HOME.route
+        ) {
+            HomeScreen(null)
+        }
     }
 }
